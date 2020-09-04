@@ -1,5 +1,10 @@
 module AntOptim
 
-# Write your package code here.
+using JuMP
+
+include("Parser.jl")
+include("Model/Model.jl")
+
+include("Ants.jl")
 
 end
