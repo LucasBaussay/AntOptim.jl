@@ -1,5 +1,9 @@
 struct CityIndex
-    value::Int64
+    value::String
+end
+
+function CityIndex(int::Int64)
+    return CityIndex(string(int))
 end
 
 mutable struct City

@@ -44,13 +44,11 @@ function addCity!(ant::Ant, city::City, way::Way)
 
 end
 
-function calcTotal(city::City, nextCities::Vector{City}, model::Model, α::Real, β::Real)
+function calcTotal(city::City, list_ways::Vector{Way}, model::Model, α::Real, β::Real)
 
 	total::Float64 = 0.
 
-	for nextCity in nextCities
-		way = model.ways[city.index][nextCity.index]
-
+	for way in list_ways
 		total += way.pheromone^α * way.length^(-β)
 	end
 
@@ -71,19 +69,16 @@ function chooseCity(model::Model, ant::Ant, α::Real, β::Real)
 	city::City = ant.way[length(ant.way)]
 	# dictProba::Dict{City, Float64} = Dict{City, Float64}()
 
-	ways::Dict{CityIndex, Way} = model.ways[city.index]
-	total::Float64 = calcTotal(city, ant.notWay, model, α, β)
+	list_ways::Vector{Way} = collect(values(model.ways[city.index]))
+	total::Float64 = calcTotal(city, list_ways, model, α, β)
 
 	listProba = Vector{Float64}()
 	sumProba = 0.
 
 	indCity = 1
 
-	for potentialCity in ant.notWay
-
-		way = model.ways[city.index][potentialCity.index]
+	for way in list_ways
 		proba = calcProba(ant, way, total, α, β)
-
 		push!(listProba, proba)
 	end
 
