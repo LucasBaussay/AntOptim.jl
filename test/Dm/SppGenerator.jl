@@ -93,5 +93,42 @@ function generate(nbrVar::Int64, nbrConst::Int64)
 end
 
 function loadSPP(fname)
+    f= open(fname)
+    nbConst, nbVar = parse.(Int, split(readline(f)))
+    c = parse.(Int, split(readline(f)))
+    c = Dict(VI(ind) => c[ind] for ind=1:nbVar)
 
+    listOccur::Dict{VI, Dict{VI, Int64}} = Dict()
+    listLiaison::Dict{VI, Vector{VI}} = Dict()
+
+    occurVar::Dict{VI, Int64} = Dict(VI(var) => 0 for var = 1:nbrVar)
+    M::Dict{CI, Vector{VI}} = Dict()
+
+    for ind = 1:nbConst
+        readline(f)
+
+        ListTirage = parse.(Int, split(readline(f)))
+
+        # println(ListTirage)
+        for var1 in VI.(ListTirage)
+            occurVar[var1] += 1
+            for var2 in VI.(ListTirage)
+                if var1 != var2
+                    if !haskey(listOccur, var1)
+                        push!(listOccur, var1 => Dict())
+                        push!(listLiaison, var1 => [var1])
+                    end
+                    if !haskey(listOccur[var1], var2)
+                        push!(listOccur[var1], var2 => 0)
+                        push!(listLiaison[var1], var2)
+                    end
+                    listOccur[var1][var2] += 1
+
+                end
+            end
+        end
+
+        push!(M, CI(ind) => VI.(ListTirage))
+    end
+    return c, M, listOccur, listLiaison, occurVar
 end
