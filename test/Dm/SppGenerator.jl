@@ -91,3 +91,7 @@ function generate(nbrVar::Int64, nbrConst::Int64)
     # end
     # return c, M, Mbis
 end
+
+function loadSPP(fname)
+
+end

@@ -63,12 +63,18 @@ function heuristic(c::Dict{VI, Int64}, M::Dict{CI, Vector{VI}}, listOccur::Dict{
     # relationList::Vector{Vector{Int64}} = Vector{Vector{Int64}}(undef, nbrVar)
     variables = VI.(1:nbVar)
     while variables != []
+
         x_i = findVariable(c, occurVar, variables)
-        filter!(x -> !(x in listLiaison[x_i]), variables)
+        filterList::Vector{VI} = haskey(listLiaison, x_i) ? listLiaison[x_i] : [x_i]
+        filter!(x -> !(x in filterList), variables)
         x0[x_i] = 1
         # Reduire OccurVar
     end
-    return x0, z(x0, c)
+    x = zeros(nbVar)
+    for pair in x0
+        x[pair.first.value] = pair.second
+    end
+    return x, z(x0, c)
 end
 
 function heuristic(nbVar::Int64, nbConst::Int64)
