@@ -98,10 +98,11 @@ function loadSPP(fname)
     c = parse.(Int, split(readline(f)))
     c = Dict(VI(ind) => c[ind] for ind=1:nbVar)
 
+    # listOccur::Dict{VI, Dict{VI, Int64}} = Dict(var1 => Dict(var1 => 0 for var2 in VI.(1:nbVar)) for var1 in VI.(1:nbVar))
     listOccur::Dict{VI, Dict{VI, Int64}} = Dict()
     listLiaison::Dict{VI, Vector{VI}} = Dict()
 
-    occurVar::Dict{VI, Int64} = Dict(VI(var) => 0 for var = 1:nbrVar)
+    occurVar::Dict{VI, Int64} = Dict(VI(var) => 0 for var = 1:nbVar)
     M::Dict{CI, Vector{VI}} = Dict()
 
     for ind = 1:nbConst

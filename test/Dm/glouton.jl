@@ -69,6 +69,20 @@ function heuristic(c::Dict{VI, Int64}, M::Dict{CI, Vector{VI}}, listOccur::Dict{
         filter!(x -> !(x in filterList), variables)
         x0[x_i] = 1
         # Reduire OccurVar
+
+        for variable in variables
+            if haskey(listOccur, variable)
+                for pair in listOccur[variable]
+                    # println(occurVar[variable])
+                    # println(listOccur[variable])
+                    # println(listOccur[variable][supprVar])
+                    if pair.first in filterList
+                        occurVar[variable] -= pair.second
+                    end
+                end
+            end
+        end
+
     end
     x = zeros(nbVar)
     for pair in x0
@@ -82,5 +96,13 @@ function heuristic(nbVar::Int64, nbConst::Int64)
     return heuristic(c, M, listOccur, listLiaison, occurVar)
 end
 
+function heuristic(fname::String)
+    c, M, listOccur, listLiaison, occurVar = loadSPP(fname)
+    return heuristic(c, M, listOccur, listLiaison, occurVar)
+end
 
     # Faux ! Ecrit ton heuristique sur papier avant de la coder !
+function main(fname::String)
+    heuristic("Data/test.txt")
+    return @time heuristic(fname)
+end
