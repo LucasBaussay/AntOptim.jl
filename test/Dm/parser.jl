@@ -166,8 +166,31 @@ function main()
 end
 
 
-function exchangeKp(x::Vector{Int64}, z::Int64, prob::Problem, k::Int64, p::Int64)
+function exchangeK1(x::Vector{Int64}, z::Int64, var0::Vector{Int64}, var1::Vector{Int64}, prob::Problem, k::Int64)
+	#A chaque appel de cette fonction p = 1
+	varPossible = Vector{Int64}(undef, length(x))
+	indPossible = 1
 
+	permut::Vector{Tuple{Int64, Int64, Int64}} = Vector(undef, length(var0) * length(var1)*(length(var1)-1))
+	indPermut = 1
+
+	for ind0 in var0
+		indPossible = 1
+		for var = 1:length(x)
+			if prob.listOccur[ind0,var] == 1
+				varPossible[indPossible] = var
+				indPossible += 1
+			end
+		end
+		for ind = 1:indPossible
+			for indBis = 1:indPossible
+				if prob.listOccur[ind, indBis] == 0
+					permut[indPermut] = [ind, indBis, ind0]
+				end
+			end
+		end
+	end
+	return permut
 end
 
 function amelioration(sol::Solution, prob::Problem)
@@ -175,7 +198,7 @@ function amelioration(sol::Solution, prob::Problem)
 	chgt21::Bool = true
 	chgt11::Bool = true
 	chgt10::Bool = true
-	x, z = sol.x, sol.z
+	x, z, var0, var1 = sol.x, sol.z, sol.var0, sol.var1
 	nbchgt21 = 0
 	nbchgt11 = 0
 	nbchgt10 = 0
@@ -185,7 +208,7 @@ function amelioration(sol::Solution, prob::Problem)
 		# nbchgt21 = 0
 		while chgt21
 			chgt21 = true
-			newX, newZ = exchangeKp(x, z, prob, 2,1)
+			newX, newZ = exchangeKp(x, z, var0, var1, prob, 2,1)
 			if z!=newZ
 				x = newX
 				z = newZ
@@ -197,7 +220,7 @@ function amelioration(sol::Solution, prob::Problem)
 		nbchgt11 = 0
 		while chgt11
 			chgt11 = true
-			newX, newZ = exchangeKp(x, z, prob, 1, 1)
+			newX, newZ = exchangeKp(x, z, var0, var1, prob, 1, 1)
 			if z!=newZ
 				x = newX
 				z = newZ
@@ -209,7 +232,7 @@ function amelioration(sol::Solution, prob::Problem)
 		nbchgt10 = 0
 		while chgt10
 			chgt10 = true
-			newX, newZ = exchangeKp(x, z, prob, 1, 0)
+			newX, newZ = exchangeKp(x, z, var0, var1, prob, 1, 0)
 			if z!=newZ
 				x = newX
 				z = newZ
